@@ -3,7 +3,7 @@ structure:
     A, The Data(bit string):
 
         Prerequisites: 
-        -Determine the smallest version possible: https://www.thonky.com/qr-code-tutorial/error-correction-table
+        -Determine the smallest version possible: https://www.thonky.com/qr-code-tutorial/character-capacities
 
         -Find the maximum bit length according to EC level and version: https://www.thonky.com/qr-code-tutorial/error-correction-table
 
