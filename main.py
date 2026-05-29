@@ -5,7 +5,7 @@
 # (2) + ECCdivisorgenerator.py - Using version, get the Generator ECC
 #     + main.py - Break a part of data into blocks in Group 1
 #     + main.py - Break the rest of data into blocks in Group 2 (if any)
-# (3)   ECCcodewordgen.py - Divide a block of data with the generator to get the ECC for that block
+# (3)   ECCdivision.py - Divide a block of data with the generator to get the ECC for that block
 # (4)   main.py - Assemble the data codewords with the ECC codewords
 # (5)   main.py - Draw the QR code and output it to Output folder
 ###############################
@@ -19,14 +19,14 @@ ECstructures = [[0,0,0,0,0],[17,1,9,0,0],[28,1,16,0,0],[22,2,13,0,0],[16,4,9,0,0
 # Number of codewords in [index] version
 datacodewords = [0,9,16,26,36,46,60,66,86,100,122,140,158,180,197,223,253,283,313,341,385,406,442,464,514,538,596,628,661,701,745,793,845,901,961,986,1054,1096,1142,1222,1276]
 
-#(0)
+### (0)
 msg = input("Enter message to encode: ")
 
-#(1)
+### (1)
 data = dataenc.encode(msg)
 version = datacodewords.index(len(data)/8)
 
-#(2)
+### (2)
 ECstructure = ECstructures[version]
 ECCdivisor = divisor.getgen(ECstructure[0])
 Group1 = []
@@ -48,4 +48,20 @@ if len(g2msg) != 0:
 else:
     G2empty = True
 
-#(3)
+### (3)
+# Convert all data in G1 and G2 into binary
+BinG1 = [[""] * ECstructure[2]] * ECstructure[1]
+BinG2 = [[""] * ECstructure[4]] * ECstructure[3]
+
+for i in range(ECstructure[1]):
+    for g in range(ECstructure[2]):
+        BinG1[i][g] = int(Group1[i][g],2)
+for i in range(ECstructure[3]):
+    for g in range(ECstructure[4]):
+        BinG2[i][g] = int(Group2[i][g],2)
+
+ErrG1 = []
+ErrG2 = []
+
+for i in range(ECstructure[1]):
+    ErrG1.append()
