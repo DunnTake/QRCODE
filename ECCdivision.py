@@ -19,8 +19,8 @@ def divide(dividend,divisor): # input list of ints, list of alpha expos
                 dor[g] %= 255
         for g in range(len(divisor)):
             dividend[i + g] = dividend[i + g] ^ aint[dor[g]]
-        print("dor:",dor)
-        print("div:",dividend)
+        #print("dor:",dor)
+        #print("div:",dividend)
     for i in range(datacodewords):
         dividend.pop(0)
 
@@ -33,5 +33,3 @@ def divide(dividend,divisor): # input list of ints, list of alpha expos
 
     return dividend
 
-
-print(divide([32,91,11,120,209,114,220,77,67,64,236,17,236,17,236,17],[0,251,67,46,61,118,70,64,94,32,45]))
