@@ -107,6 +107,9 @@ remainder = [0,0,7,7,7,7,7,0,0,0,0,0,0,0,3,3,3,3,3,3,3,4,4,4,4,4,4,4,3,3,3,3,3,3
 final += "0" * remainder[version]
 print("version:",version)
 print("final:",final)
+print("ECC:",finalECC)
+print("msgbits:",data,len(data))
+print("codewords:", str(len(data)/8) + "/" + str(datacodewords[version]))
 
 ### (6)
 drawqr.output(version,final)

@@ -12,6 +12,8 @@ def encode(strinput): #input message str
     elif length > 1273:
         print("Error: Character limit of 1273 exceeded")
         exit()
+    elif length > 64:
+        print("Error: Version cannot exceed 7 (64 characters)")
 
     # Find suitable type
     type = 0
