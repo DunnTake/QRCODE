@@ -43,21 +43,14 @@ def output(version,data):
         # takes starting point as bottom right pixel
         if type == "dot":
             end = (start[0]-pixelsize + 1,start[1]-pixelsize + 1)
-            for x in range(end[0],start[0] + 1):
-                for y in range(end[1],start[1] + 1):
-                    img.put("black",(x,y))
-        
+            img.put("black", to=(end[0],end[1],start[0]+1,start[1]+1))
         elif type == "align":
             #black 5x5
             end = (start[0]-5*pixelsize + 1,start[1]-5*pixelsize + 1)
-            for x in range(end[0],start[0] + 1):
-                for y in range(end[1],start[1] + 1):
-                    img.put("black",(x,y))
+            img.put("black", to=(end[0],end[1],start[0]+1,start[1]+1))
             #white 3x3
             end = (start[0]-4*pixelsize + 1,start[1]-4*pixelsize + 1)
-            for x in range(end[0],start[0] - pixelsize + 1):
-                for y in range(end[1],start[1] - pixelsize + 1):
-                    img.put("white",(x,y))
+            img.put("white", to=(end[0],end[1],start[0]-pixelsize+1,start[1]-pixelsize+1))
             #black center
             draw("dot",(start[0]-2*pixelsize,start[1]-2*pixelsize))
         
@@ -65,19 +58,13 @@ def output(version,data):
             #white 9x9 (ignore)
             #black 7x7
             end = (start[0]-8*pixelsize + 1,start[1]-8*pixelsize + 1)
-            for x in range(end[0],start[0] - pixelsize + 1):
-                for y in range(end[1],start[1] - pixelsize + 1):
-                    img.put("black",(x,y))
+            img.put("black", to=(end[0],end[1],start[0]-pixelsize+1,start[1]-pixelsize+1))
             #white 5x5
             end = (start[0]-7*pixelsize + 1,start[1]-7*pixelsize + 1)
-            for x in range(end[0],start[0] -2*pixelsize + 1):
-                for y in range(end[1],start[1] -2*pixelsize + 1):
-                    img.put("white",(x,y))
+            img.put("white", to=(end[0],end[1],start[0]-2*pixelsize+1,start[1]-2*pixelsize+1))
             #black 3x3
             end = (start[0]-6*pixelsize + 1,start[1]-6*pixelsize + 1)
-            for x in range(end[0],start[0] - 3*pixelsize + 1):
-                for y in range(end[1],start[1] - 3*pixelsize + 1):
-                    img.put("black",(x,y))
+            img.put("black", to=(end[0],end[1],start[0]-3*pixelsize+1,start[1]-3*pixelsize+1))
 
     ## -- Placing module matrix, set up limit
     limit = []
