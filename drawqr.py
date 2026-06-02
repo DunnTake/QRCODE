@@ -1,5 +1,7 @@
 import tkinter as tk
-def output(version,data):
+import os
+
+def output(version,data,name):
     ### PREPARING PROPERTIES
     # Version properties 
     properties = [0, 0, [(6, 18), 11], [(6, 22), 11], [(6, 26), 11], [(6, 30), 11], [(6, 34), 11], [(6, 22, 38), 11], [(6, 24, 42), 11], [(6, 26, 46), 11], [(6, 28, 50), 11], [(6, 30, 54), 11], [(6, 32, 58), 11], [(6, 34, 62), 11], [(6, 26, 46, 66), 11], [(6, 26, 48, 70), 11], [(6, 26, 50, 74), 11], [(6, 30, 54, 78), 11], [(6, 30, 56, 82), 11], [(6, 30, 58, 86), 11], [(6, 34, 62, 90), 11], [(6, 28, 50, 72, 94), 5], [(6, 26, 50, 74, 98), 5], [(6, 30, 54, 78, 102), 5], [(6, 28, 54, 80, 106), 5], [(6, 32, 58, 84, 110), 5], [(6, 30, 58, 86, 114), 5], [(6, 34, 62, 90, 118), 5], [(6, 26, 50, 74, 98, 122), 5], [(6, 30, 54, 78, 102, 126), 5], [(6, 26, 52, 78, 104, 130), 5], [(6, 30, 56, 82, 108, 134), 5], [(6, 34, 60, 86, 112, 138), 5], [(6, 30, 58, 86, 114, 142), 5], [(6, 34, 62, 90, 118, 146), 5], [(6, 30, 54, 78, 102, 126, 150), 5], [(6, 24, 50, 76, 102, 128, 154), 5], [(6, 28, 54, 80, 106, 132, 158), 5], [(6, 32, 58, 84, 110, 136, 162), 5], [(6, 26, 54, 82, 110, 138, 166), 5], [(6, 30, 58, 86, 114, 142, 170), 5]]
@@ -37,6 +39,8 @@ def output(version,data):
 
     img = tk.PhotoImage(width=canvasscale, height=canvasscale)
     canvas.create_image(canvasscale // 2, canvasscale  // 2, image=img)
+    img.put("white", to=(0,0,canvasscale-1,canvasscale-1))
+    root.update()
     ## -- Drawing function
 
     def draw(type, start): # "dot"/"align"/"separator" as type, (x,y) as starting point
@@ -95,6 +99,32 @@ def output(version,data):
         limit.append((11 * pixelsize - 1,canvasscale - (12 + i) * pixelsize - 1))
         limit.append(((13 + i) * pixelsize - 1,11 * pixelsize - 1))
     
+    # place version information (if version is 7 or higher)
+    if version >= 7:
+        binver = bin(version)[2:]
+        binver = "0" * (6 - len(binver)) + binver
+        verdivend = str(int(binver + "0" * 12))
+        verdivsor = "1111100100101"
+        while len(verdivend) > 12:
+            verdiv = verdivsor + "0" * (len(verdivend)-len(verdivsor))
+            verdivend = bin(int(verdivend,2)^int(verdiv,2))[2:]
+        verdivend = "0" * (12 - len(verdivend)) + verdivend
+        binver += verdivend
+        binver = list(binver)
+        binver.reverse()
+        for x in range(3):
+            for y in range(6):
+                for i in range(18):
+                    if binver[i] == "0":
+                        draw("dot",(canvasscale - (14-x) * pixelsize - 1, (5+y) * pixelsize - 1))
+                    limit.append((canvasscale - (14-x) * pixelsize - 1, (5+y) * pixelsize - 1))
+        for x in range(6):
+            for y in range(3):
+                for i in range(18):
+                    if binver[i] == "0":
+                        draw("dot",((5+x) * canvasscale - 1, canvasscale - (14-y) * pixelsize - 1))
+                    limit.append(((5+x) * canvasscale - 1, canvasscale - (14-y) * pixelsize - 1))
+
     # place that one dot (dark module)
     draw("dot",thatonedot)
 
@@ -201,7 +231,6 @@ def output(version,data):
             color = "black"
         img.put(color, to=(end[0],end[1],start[0]+1,start[1]+1))
     
-    print(points)
     flip_targets = []
     for pos in points:
         if (((pos[0][0] + 1) // pixelsize) - 5) % 3 == 0:
@@ -209,6 +238,21 @@ def output(version,data):
     
     for point in flip_targets:
         flip(point[0],point[1])
+    
+    # Saving the image
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    target_folder = os.path.join(script_dir, "Output")
+    file_path = os.path.join(target_folder, f"{name}.png")
 
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
 
-    root.mainloop()
+    request = input("Save image in Output? [y/n]: ")
+    while request != "y" and request != "n":
+        request = input("Save image in Output? [y/n]: ")
+    if request == "n":
+        print("File discarded")
+    else:
+        img.write(file_path,format="png")
+        print(f"File saved to: {file_path}")
+    root.destroy()

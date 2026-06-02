@@ -4,16 +4,7 @@ def encode(strinput): #input message str
     datacodewords = [0,9,16,26,36,46,60,66,86,100,122,140,158,180,197,223,253,283,313,341,385,406,442,464,514,538,596,628,661,701,745,793,845,901,961,986,1054,1096,1142,1222,1276]
     ## MODE: BYTE (1)
     mode = "0100"
-
     length = len(strinput)
-    if length == 0:
-        print("Error: message empty")
-        exit()
-    elif length > 1273:
-        print("Error: Character limit of 1273 exceeded")
-        exit()
-    elif length > 64:
-        print("Error: Version cannot exceed 7 (64 characters)")
 
     # Find suitable type
     type = 0
