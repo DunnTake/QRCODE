@@ -131,6 +131,10 @@ def qrcode():
         final += "0" * remainder[version]
 
         ### (6)
+        print("========== SPECS ==========")
+        print("File Name:",name)
+        print("Version:",version)
+        print("===========================")
         drawqr.output(version,final,name)
 
 while True:

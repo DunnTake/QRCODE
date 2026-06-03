@@ -1,12 +1,15 @@
 import tkinter as tk
 import os
+import sys
+import time
 
 def output(version,data,name):
     ### PREPARING PROPERTIES
     # Version properties 
     properties = [0, 0, [(6, 18), 11], [(6, 22), 11], [(6, 26), 11], [(6, 30), 11], [(6, 34), 11], [(6, 22, 38), 11], [(6, 24, 42), 11], [(6, 26, 46), 11], [(6, 28, 50), 11], [(6, 30, 54), 11], [(6, 32, 58), 11], [(6, 34, 62), 11], [(6, 26, 46, 66), 11], [(6, 26, 48, 70), 11], [(6, 26, 50, 74), 11], [(6, 30, 54, 78), 11], [(6, 30, 56, 82), 11], [(6, 30, 58, 86), 11], [(6, 34, 62, 90), 11], [(6, 28, 50, 72, 94), 5], [(6, 26, 50, 74, 98), 5], [(6, 30, 54, 78, 102), 5], [(6, 28, 54, 80, 106), 5], [(6, 32, 58, 84, 110), 5], [(6, 30, 58, 86, 114), 5], [(6, 34, 62, 90, 118), 5], [(6, 26, 50, 74, 98, 122), 5], [(6, 30, 54, 78, 102, 126), 5], [(6, 26, 52, 78, 104, 130), 5], [(6, 30, 56, 82, 108, 134), 5], [(6, 34, 60, 86, 112, 138), 5], [(6, 30, 58, 86, 114, 142), 5], [(6, 34, 62, 90, 118, 146), 5], [(6, 30, 54, 78, 102, 126, 150), 5], [(6, 24, 50, 76, 102, 128, 154), 5], [(6, 28, 54, 80, 106, 132, 158), 5], [(6, 32, 58, 84, 110, 136, 162), 5], [(6, 26, 54, 82, 110, 138, 166), 5], [(6, 30, 58, 86, 114, 142, 170), 5]]
     codesize = 17 + 4 * version
-    fullsize = codesize + 8
+    quietzone = 4 + version // 4
+    fullsize = codesize + quietzone * 2
     if version == 1:
         pixelsize = 11
     else:
@@ -24,12 +27,12 @@ def output(version,data,name):
                 # Exclusively avoids the separators
                 cords = (nums[i],nums[g])
                 if cords not in seps:
-                    align.append(((nums[i]+7)*pixelsize - 1,(nums[g]+7)*pixelsize - 1))
+                    align.append(((nums[i]+quietzone+3)*pixelsize - 1,(nums[g]+quietzone+3)*pixelsize - 1))
 
     # Separators, coords as bottom right dot (white dot)
-    separators.append((12 * pixelsize - 1,12 * pixelsize - 1))
-    separators.append((canvasscale - 3 * pixelsize - 1,12 * pixelsize - 1))
-    separators.append((12 * pixelsize - 1,canvasscale - 3 * pixelsize - 1))
+    separators.append(((8+quietzone) * pixelsize - 1,(8+quietzone) * pixelsize - 1))
+    separators.append((canvasscale - (quietzone-1) * pixelsize - 1,(8 + quietzone) * pixelsize - 1))
+    separators.append(((8+quietzone) * pixelsize - 1,canvasscale - (quietzone-1) * pixelsize - 1))
 
     ### PREPARING CANVAS
     ## -- Initialize canvas
@@ -72,9 +75,9 @@ def output(version,data,name):
 
     ## -- Placing module matrix, set up limit
     limit = []
-    border = (5 * pixelsize - 1, canvasscale - 4 * pixelsize - 1,11 * pixelsize - 1) # Up, down y, the dot right before the quiet zone and vertical timing's x value
-    startingdot = (canvasscale - 4*pixelsize - 1,canvasscale - 4*pixelsize - 1)
-    thatonedot = (13*pixelsize - 1, canvasscale - 11 * pixelsize - 1)
+    border = ((quietzone + 1) * pixelsize - 1, canvasscale - quietzone * pixelsize - 1,(7+quietzone) * pixelsize - 1) # Up, down y, the dot right before the quiet zone and vertical timing's x value
+    startingdot = (canvasscale - quietzone*pixelsize - 1,canvasscale - quietzone*pixelsize - 1)
+    thatonedot = ((9+quietzone)*pixelsize - 1, canvasscale - (7+quietzone) * pixelsize - 1)
     timingstrips = 1 + version*4
     
     # place seps (range(10) due to masking and shit)
@@ -94,10 +97,10 @@ def output(version,data,name):
     # place timing strips
     for i in range(timingstrips):
         if i % 2 == 0:
-            draw("dot",(11 * pixelsize - 1,canvasscale - (12 + i) * pixelsize - 1))
-            draw("dot",((13 + i) * pixelsize - 1,11 * pixelsize - 1))
-        limit.append((11 * pixelsize - 1,canvasscale - (12 + i) * pixelsize - 1))
-        limit.append(((13 + i) * pixelsize - 1,11 * pixelsize - 1))
+            draw("dot",((7+quietzone) * pixelsize - 1,canvasscale - (8 + quietzone + i) * pixelsize - 1))
+            draw("dot",((9 + quietzone + i) * pixelsize - 1,(7+quietzone) * pixelsize - 1))
+        limit.append(((7+quietzone) * pixelsize - 1,canvasscale - (8 + quietzone + i) * pixelsize - 1))
+        limit.append(((9 + quietzone + i) * pixelsize - 1,(7+quietzone) * pixelsize - 1))
     
     # place version information (if version is 7 or higher)
     if version >= 7:
@@ -112,19 +115,21 @@ def output(version,data,name):
         binver += verdivend
         binver = list(binver)
         binver.reverse()
-        for x in range(3):
-            for y in range(6):
-                for i in range(18):
-                    if binver[i] == "0":
-                        draw("dot",(canvasscale - (14-x) * pixelsize - 1, (5+y) * pixelsize - 1))
-                    limit.append((canvasscale - (14-x) * pixelsize - 1, (5+y) * pixelsize - 1))
+        print("".join(binver))
+        vinfo = 0
+        for y in range(6):
+            for x in range(3):
+                if binver[vinfo] == "1":
+                    draw("dot",(canvasscale - (10+quietzone-x) * pixelsize - 1, (1+quietzone+y) * pixelsize - 1))
+                limit.append((canvasscale - (10+quietzone-x) * pixelsize - 1, (1+quietzone+y) * pixelsize - 1))
+                vinfo += 1
+        vinfo = 0
         for x in range(6):
             for y in range(3):
-                for i in range(18):
-                    if binver[i] == "0":
-                        draw("dot",((5+x) * canvasscale - 1, canvasscale - (14-y) * pixelsize - 1))
-                    limit.append(((5+x) * canvasscale - 1, canvasscale - (14-y) * pixelsize - 1))
-
+                if binver[vinfo] == "1":
+                    draw("dot",((1+quietzone+x) * pixelsize - 1, canvasscale - (10+quietzone-y) * pixelsize - 1))
+                limit.append(((1+quietzone+x) * pixelsize- 1, canvasscale - (10+quietzone-y) * pixelsize - 1))
+                vinfo += 1
     # place that one dot (dark module)
     draw("dot",thatonedot)
 
@@ -203,24 +208,24 @@ def output(version,data,name):
     formatstr = ecc + mask + dividend
     formatstr = bin(int(formatstr,2)^int("101010000010010",2))[2:] #XOR with a certain binary
     formatstr = "0" * (15 - len(formatstr)) + formatstr # Restore some might've been lost 0s
-    print(formatstr)
+    #print(formatstr)
     # 001110011100111
     
     # Draw it out on the QR code
     for i in range(7):
         if formatstr[i] == "1":
             if i == 6:
-                draw("dot",(12*pixelsize - 1,13*pixelsize - 1))
+                draw("dot",((8+quietzone)*pixelsize - 1,(9+quietzone)*pixelsize - 1))
             else:
-                draw("dot",((5+i)*pixelsize - 1,13*pixelsize - 1))
-            draw("dot",(13*pixelsize-1,canvasscale - (4+i)*pixelsize - 1))
+                draw("dot",((1+quietzone+i)*pixelsize - 1,(9+quietzone)*pixelsize - 1))
+            draw("dot",((9+quietzone)*pixelsize-1,canvasscale - (quietzone+i)*pixelsize - 1))
     for i in range(7,15):
         if formatstr[i] == "1":
             if i >= 9:
-                draw("dot",(13*pixelsize - 1,(19-i)*pixelsize - 1))
+                draw("dot",((9+quietzone)*pixelsize - 1,(15+quietzone-i)*pixelsize - 1))
             else:
-                draw("dot",(13*pixelsize - 1,(20-i)*pixelsize - 1))
-            draw("dot",(canvasscale - (18-i)*pixelsize - 1,13*pixelsize - 1))
+                draw("dot",((9+quietzone)*pixelsize - 1,(16+quietzone-i)*pixelsize - 1))
+            draw("dot",(canvasscale - (14+quietzone-i)*pixelsize - 1,(9+quietzone)*pixelsize - 1))
 
     # Apply the masking
     def flip(start,bit):
@@ -233,19 +238,22 @@ def output(version,data,name):
     
     flip_targets = []
     for pos in points:
-        if (((pos[0][0] + 1) // pixelsize) - 5) % 3 == 0:
+        if (((pos[0][0] + 1) // pixelsize) - (1+quietzone)) % 3 == 0:
             flip_targets.append(pos)
     
     for point in flip_targets:
         flip(point[0],point[1])
     
     # Saving the image
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if getattr(sys,'frozen', False):
+        script_dir = os.path.dirname(sys.executable)
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
     target_folder = os.path.join(script_dir, "Output")
-    file_path = os.path.join(target_folder, f"{name}.png")
-
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
+        time.sleep(0.1)
+    file_path = os.path.join(target_folder, f"{name}.png")
 
     request = input("Save image in Output? [y/n]: ")
     while request != "y" and request != "n":
@@ -253,6 +261,6 @@ def output(version,data,name):
     if request == "n":
         print("File discarded")
     else:
-        img.write(file_path,format="png")
         print(f"File saved to: {file_path}")
+        img.write(file_path,format="png")
     root.destroy()
